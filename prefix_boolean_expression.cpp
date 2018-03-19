@@ -1,18 +1,42 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-typedef struct op
-{
+string temp;
+string combi[5];
+
+typedef struct op{
 	char ch;
 	struct op *next;
 } OP;
 
-OP *APPEND(OP *head, char ch){
+OP *APPEND(OP *, char, int);
+OP *gene(string);
+OP *evac(OP *);
+void PRINT(OP *);
+void replaceBool(string, char);
+inline int isBool(char);
+inline int getBool(char);
+inline char boolToChar(int);
+
+int main(){
+	char ch;
+	int i = 0;
+	string line;
+
+	cin >> line;
+	temp = line;
+
+	replaceBool(line, 'A');
+	return 0;
+}
+
+OP *APPEND(OP *head, char ch, int is_head){
 	static OP *rear = NULL;
 	OP *node;
 
-	if (rear == NULL){
+	if (is_head){
 		head->ch = ch;
 		rear = head;
 	}
@@ -32,10 +56,10 @@ void PRINT(OP *head){
 	for (i = head; i!=NULL; i=i->next){
 		cout << i->ch;
 	}
-	cout<<endl;
+	// cout<<endl;
 }
 
-int isBool(char ch){
+inline int isBool(char ch){
 	if (ch == '1' || ch == '0'){
 		return 1;
 	}
@@ -44,12 +68,8 @@ int isBool(char ch){
 	}
 }
 
-int getBool(char ch){
+inline int getBool(char ch){
 	return ch == '1'? 1:0;
-}
-
-char toBool(bool n){
-	return n? '1':'0';
 }
 
 OP *evac(OP *head){
@@ -59,7 +79,7 @@ OP *evac(OP *head){
 	for (i = head; i!=NULL; ){
 		if (i->ch == '|'){
 			if (isBool((i->next)->ch) && isBool(((i->next)->next)->ch)){
-				i->ch = toBool(getBool((i->next)->ch) || getBool(((i->next)->next)->ch));
+				i->ch = boolToChar(getBool((i->next)->ch) || getBool(((i->next)->next)->ch));
 				temp = ((i->next)->next)->next;
 				i->next = temp;
 				// delete i->next;
@@ -71,7 +91,7 @@ OP *evac(OP *head){
 		}
 		else if (i->ch == '&'){
 			if (isBool((i->next)->ch) && isBool(((i->next)->next)->ch)){
-				i->ch = toBool(getBool((i->next)->ch) && getBool(((i->next)->next)->ch));
+				i->ch = boolToChar(getBool((i->next)->ch) && getBool(((i->next)->next)->ch));
 				temp = ((i->next)->next)->next;
 				i->next = temp;
 				// delete i->next;
@@ -89,21 +109,77 @@ OP *evac(OP *head){
 	return head;
 }
 
-int main(){
-	char ch;
+inline char boolToChar(int n){
+	return n? '1':'0';
+}
+
+void replaceBool(string line, char ch){
+	if (ch == 'A'){
+		for (int j = 0; j < 2; j++){
+			combi[0] = boolToChar(j);
+			for (int i = 0; i < line.size(); i++){
+				if (temp[i] == 'A'){
+					line[i] = boolToChar(j);
+				}
+			}
+			replaceBool(line, 'B');
+		}
+	}
+
+	else if (ch == 'B'){
+		for (int j = 0; j < 2; j++){
+			combi[1] = boolToChar(j);
+			for (int i = 0; i < line.size(); i++){
+				if (temp[i] == 'B'){
+					line[i] = boolToChar(j);
+				}
+			}
+			replaceBool(line, 'C');
+		}
+	}
+
+	else if (ch == 'C'){
+		for (int j = 0; j < 2; j++){
+			combi[2] = boolToChar(j);
+			for (int i = 0; i < line.size(); i++){
+				if (temp[i] == 'C'){
+					line[i] = boolToChar(j);
+				}
+			}
+			replaceBool(line, 'D');
+		}
+	}
+
+	else if (ch == 'D'){
+		for (int j = 0; j < 2; j++){
+			combi[3] = boolToChar(j);
+			for (int i = 0; i < line.size(); i++){
+				if (temp[i] == 'D'){
+					line[i] = boolToChar(j);
+				}
+			}
+			for (int i = 0; i < 4; i++){
+				cout << combi[i] << ' ';
+			}
+			gene(line);
+		}
+	}
+}
+
+OP *gene(string line){
 	OP *head;
+	int i = 0;
 
 	head = new OP;
 	head->next = NULL;
 
-	while (cin >> ch){
-		APPEND(head, ch);
+	while (line[i]!='\0'){
+		APPEND(head, line[i], !i);
+		i++;
 	}
-	PRINT(head);
 	while(!isBool(head->ch)){
 		evac(head);
-		PRINT(head);
 	}
-	cout << "ans: " << head->ch;
-	return 0;
+	cout <<  head->ch << endl;
+	return head;
 }
